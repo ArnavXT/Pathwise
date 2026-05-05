@@ -1,8 +1,8 @@
-# AI Learning & Productivity Platform (EPICS)
+# Pathwise - AI Learning & Productivity Platform (EPICS)
 
 A full-stack, AI-powered learning and productivity platform designed to generate dynamic courses, adaptive quizzes, and provide gamified learning experiences. 
 
-## 🚀 Features
+## Features
 
 - **Dynamic AI Courses**: Generate comprehensive learning modules and roadmaps on any topic using the OpenRouter AI API.
 - **Adaptive Quizzing**: Challenge yourself with dynamically generated quizzes based on your course modules.
@@ -11,7 +11,7 @@ A full-stack, AI-powered learning and productivity platform designed to generate
 - **Rich Content Support**: Modules support Markdown and LaTeX equations out-of-the-box.
 - **Export Capabilities**: Download your generated course materials as PDFs or ZIP archives.
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 **Frontend (`/client`)**
 - React 19 + Vite
@@ -26,13 +26,13 @@ A full-stack, AI-powered learning and productivity platform designed to generate
 - File-based JSON storage (`server/data/data.json`)
 - Custom AI Services for interacting with language models
 
-## ⚙️ Prerequisites
+## Prerequisites
 
 - **Node.js** (v18 or higher recommended)
 - **npm** or **yarn**
 - An **OpenRouter API Key**
 
-## 🚦 Getting Started
+## Getting Started
 
 ### 1. Clone the repository
 Ensure you are in the project root directory (`EPICS/`).
@@ -61,7 +61,7 @@ npm run dev
 ```
 The frontend will be available at `http://localhost:5173`.
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 EPICS/
@@ -78,7 +78,7 @@ EPICS/
 └── .gitignore           # Global git ignore rules
 ```
 
-## 🧪 Testing
+## Testing
 
 To test the backend AI generation capabilities independently of the frontend, you can run the test scripts provided in the server:
 
@@ -87,4 +87,4 @@ cd server/tests
 node test_quiz.js
 ```
 The output will be generated inside `test_output.json`.
-# Pathwise
+
