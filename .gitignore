@@ -1,0 +1,44 @@
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+secrets.json
+credentials.json
+config.local.json
+.aws/
+.gcp/
+.azure/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+
+# Build Outputs
+dist/
+build/
+out/
+
+# IDEs and OS files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python (in case it returns)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.pytest_cache/
