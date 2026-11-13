@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 const DEV_PASSWORD = process.env.DEV_PASSWORD || "pathwise_dev_2024";
 
 function getActiveKey(apiKey) {
-    return apiKey || process.env.GEMINI_API_KEY || process.env.OPENROUTER_API_KEY;
+    return (apiKey && apiKey.trim()) || process.env.GEMINI_API_KEY || process.env.OPENROUTER_API_KEY;
 }
 
 // Utility to get current user state (using a single 'dev1' user for now)
@@ -107,7 +107,7 @@ app.post('/api/course/generate', async (req, res) => {
             await saveUserState(state);
             res.json({ success: true, roadmap, state });
         } else {
-            res.status(500).json({ error: "Failed to generate roadmap" });
+            res.status(500).json({ error: "Failed to generate roadmap. Please check your Gemini API key in Developer Settings." });
         }
     } catch (e) {
         res.status(500).json({ error: e.message });
