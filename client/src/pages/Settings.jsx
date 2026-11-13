@@ -5,7 +5,7 @@ import { Key, Lock, Unlock, RefreshCw } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
 export default function Settings() {
-  const { apiKey, setApiKey, devAuth, setDevAuth, fetchState } = useAppContext();
+  const { state, setState, apiKey, setApiKey, devAuth, setDevAuth, fetchState } = useAppContext();
   const [password, setPassword] = useState('');
   const [tempApiKey, setTempApiKey] = useState(apiKey);
   const [error, setError] = useState('');

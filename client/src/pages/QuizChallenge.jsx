@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api';
 
 export default function QuizChallenge() {
-  const { state, apiKey, fetchState } = useAppContext();
+  const { state, setState, apiKey, fetchState } = useAppContext();
   const location = useLocation();
   const [selectedModule, setSelectedModule] = useState(location.state?.module || '');
   const [quizLoading, setQuizLoading] = useState(false);
@@ -65,7 +65,11 @@ export default function QuizChallenge() {
       if (res.ok) {
         setSubmitted(true);
         setResultData(data.result);
-        await fetchState();
+        if (data.state) {
+          setState(data.state);
+        } else {
+          await fetchState();
+        }
       }
     } catch (e) {
       console.error(e);

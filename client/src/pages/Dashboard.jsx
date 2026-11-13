@@ -14,7 +14,7 @@ import JSZip from 'jszip';
 import { API_BASE_URL } from '../config/api';
 
 export default function Dashboard() {
-  const { state, apiKey, fetchState } = useAppContext();
+  const { state, setState, apiKey, fetchState } = useAppContext();
   const [topic, setTopic] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeModuleLoading, setActiveModuleLoading] = useState(null);
