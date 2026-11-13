@@ -1,0 +1,19 @@
+{
+  "name": "pathwise",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pathwise - AI Learning & Productivity Platform",
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "client:dev": "npm run dev --prefix client",
+    "server:dev": "npm start --prefix server"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.41.0",
+    "axios": "^1.14.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
+  }
+}
+

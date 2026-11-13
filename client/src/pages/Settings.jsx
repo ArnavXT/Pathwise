@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 import { Key, Lock, Unlock, RefreshCw } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export default function Settings() {
   const { apiKey, setApiKey, devAuth, setDevAuth, fetchState } = useAppContext();
@@ -12,7 +13,7 @@ export default function Settings() {
   const handleAuth = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/auth', {
+      const res = await fetch(`${API_BASE_URL}/api/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -36,7 +37,7 @@ export default function Settings() {
   const handleReset = async () => {
     if (!window.confirm("Are you sure you want to reset all progress?")) return;
     try {
-      const res = await fetch('http://localhost:5000/api/state/reset', { method: 'POST' });
+      const res = await fetch(`${API_BASE_URL}/api/state/reset`, { method: 'POST' });
       if (res.ok) {
         await fetchState();
         alert('Progress reset complete.');
@@ -80,15 +81,15 @@ export default function Settings() {
       </div>
 
       <div className="glass-card" style={{marginBottom: 32}}>
-        <h3 style={{display:'flex', alignItems:'center', gap:8, marginBottom: 16}}><Key size={20} color="var(--accent-blue)"/> OpenRouter API Configuration</h3>
-        <p style={{color:'var(--text-secondary)', marginBottom: 24}}>This key is required to generate curriculums and quiz content. It is stored in your local browser storage.</p>
+        <h3 style={{display:'flex', alignItems:'center', gap:8, marginBottom: 16}}><Key size={20} color="var(--accent-blue)"/> AI API Configuration</h3>
+        <p style={{color:'var(--text-secondary)', marginBottom: 24}}>Supports Google Gemini API key (AQ... or AIzaSy...) and OpenRouter (sk-or-...). If left blank, the server environment key will be used automatically.</p>
         <div style={{display:'flex', gap:16}}>
           <input 
             type="password" 
             className="input-modern"
             value={tempApiKey}
             onChange={(e) => setTempApiKey(e.target.value)}
-            placeholder="sk-or-v1-..."
+            placeholder="Gemini key (AQ... / AIzaSy...) or OpenRouter key"
           />
           <button className="btn-primary" onClick={saveApiKey} style={{minWidth:140}}>Save Key</button>
         </div>

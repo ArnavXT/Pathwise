@@ -11,6 +11,7 @@ import 'katex/dist/katex.min.css';
 import html2pdf from 'html2pdf.js';
 import { marked } from 'marked';
 import JSZip from 'jszip';
+import { API_BASE_URL } from '../config/api';
 
 export default function Dashboard() {
   const { state, apiKey, fetchState } = useAppContext();
@@ -28,19 +29,23 @@ export default function Dashboard() {
 
   const handleGenerateCourse = async (e) => {
     e.preventDefault();
-    if (!topic || !apiKey) {
-      alert("Please ensure you have entered a topic and have an API key configured.");
+    if (!topic) {
+      alert("Please enter a topic to generate a roadmap.");
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/course/generate', {
+      const res = await fetch(`${API_BASE_URL}/api/course/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, apiKey })
       });
-      if (res.ok) await fetchState();
-      else alert("Generation failed. Check API key validity.");
+      if (res.ok) {
+        await fetchState();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Generation failed. Check your API key in Settings.");
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -49,10 +54,9 @@ export default function Dashboard() {
   };
 
   const generateContent = async (moduleName) => {
-    if (!apiKey) return;
     setActiveModuleLoading(moduleName);
     try {
-      const res = await fetch('http://localhost:5000/api/course/module', {
+      const res = await fetch(`${API_BASE_URL}/api/course/module`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ moduleName, apiKey })

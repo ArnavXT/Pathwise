@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 import { Zap, AlertTriangle, ShieldCheck, Loader2, ArrowRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 
 export default function QuizChallenge() {
   const { state, apiKey, fetchState } = useAppContext();
@@ -20,13 +21,13 @@ export default function QuizChallenge() {
   const generatedModules = state.roadmap.filter(m => state.generated_content[m]);
 
   const loadQuiz = async () => {
-    if (!selectedModule || !apiKey) {
-      alert("Please select a module and ensure API Key is set in Settings.");
+    if (!selectedModule) {
+      alert("Please select a module to generate a quiz.");
       return;
     }
     setQuizLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/quiz/generate', {
+      const res = await fetch(`${API_BASE_URL}/api/quiz/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ moduleName: selectedModule, apiKey })
@@ -38,7 +39,7 @@ export default function QuizChallenge() {
         setSubmitted(false);
         setResultData(null);
       } else {
-        alert("Failed to load quiz scenario or JSON parsing failed. Please try again.");
+        alert(data.error || "Failed to load quiz scenario. Please check your API key in Settings.");
       }
     } catch (e) {
       console.error(e);
@@ -55,7 +56,7 @@ export default function QuizChallenge() {
     }
     setSubmitting(true);
     try {
-      const res = await fetch('http://localhost:5000/api/quiz/submit', {
+      const res = await fetch(`${API_BASE_URL}/api/quiz/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ moduleName: selectedModule, answers, questions, apiKey })

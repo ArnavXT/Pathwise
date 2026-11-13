@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 const AppContext = createContext();
 
@@ -15,17 +16,17 @@ export const AppProvider = ({ children }) => {
     gap_recommendation: ''
   });
   
-  const [apiKey, setApiKey] = useState(localStorage.getItem('OPENROUTER_API_KEY') || '');
+  const [apiKey, setApiKey] = useState(localStorage.getItem('AI_API_KEY') || localStorage.getItem('OPENROUTER_API_KEY') || '');
   const [devAuth, setDevAuth] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('OPENROUTER_API_KEY', apiKey);
+    localStorage.setItem('AI_API_KEY', apiKey);
   }, [apiKey]);
 
   const fetchState = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/state');
+      const res = await fetch(`${API_BASE_URL}/api/state`);
       const data = await res.json();
       setState(data);
     } catch (e) {
