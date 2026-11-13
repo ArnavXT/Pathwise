@@ -44,9 +44,9 @@ export default function Dashboard() {
         const data = await res.json();
         if (data.state) {
           setState(data.state);
-        } else {
-          await fetchState();
         }
+        await fetchState();
+        setTopic('');
       } else {
         const data = await res.json().catch(() => ({}));
         alert(data.error || "Generation failed. Check your API key in Settings.");
