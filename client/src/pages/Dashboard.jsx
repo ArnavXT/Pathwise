@@ -41,7 +41,12 @@ export default function Dashboard() {
         body: JSON.stringify({ topic, apiKey })
       });
       if (res.ok) {
-        await fetchState();
+        const data = await res.json();
+        if (data.state) {
+          setState(data.state);
+        } else {
+          await fetchState();
+        }
       } else {
         const data = await res.json().catch(() => ({}));
         alert(data.error || "Generation failed. Check your API key in Settings.");
@@ -61,8 +66,13 @@ export default function Dashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ moduleName, apiKey })
       });
-      if(res.ok) {
-        await fetchState();
+      if (res.ok) {
+        const data = await res.json();
+        if (data.state) {
+          setState(data.state);
+        } else {
+          await fetchState();
+        }
         setExpandedModule(moduleName);
       }
     } catch(err) {

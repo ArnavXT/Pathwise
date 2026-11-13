@@ -1,7 +1,9 @@
+const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, '..', 'data', 'data.json');
+const BUNDLED_DB_PATH = path.join(__dirname, '..', 'data', 'data.json');
+const WRITABLE_DB_PATH = path.join(os.tmpdir(), 'pathwise_data.json');
 
 const defaultData = {
     users: {
@@ -38,7 +40,7 @@ function getRedisClient() {
     return null;
 }
 
-// In-memory fallback if filesystem is read-only and no Redis
+// In-memory fallback
 let inMemoryData = null;
 
 async function readDB() {
@@ -56,13 +58,24 @@ async function readDB() {
         }
     }
 
+    // 1. Try writable temporary path (updated during runtime / resets)
     try {
-        if (fs.existsSync(DB_PATH)) {
-            const data = fs.readFileSync(DB_PATH, 'utf-8');
+        if (fs.existsSync(WRITABLE_DB_PATH)) {
+            const data = fs.readFileSync(WRITABLE_DB_PATH, 'utf-8');
             return JSON.parse(data);
         }
     } catch (e) {
-        console.warn("Filesystem read failed, using memory fallback:", e.message);
+        console.warn("Writable temp path read error:", e.message);
+    }
+
+    // 2. Try bundled initial file
+    try {
+        if (fs.existsSync(BUNDLED_DB_PATH)) {
+            const data = fs.readFileSync(BUNDLED_DB_PATH, 'utf-8');
+            return JSON.parse(data);
+        }
+    } catch (e) {
+        console.warn("Bundled path read error:", e.message);
     }
 
     if (!inMemoryData) {
@@ -82,12 +95,20 @@ async function writeDB(data) {
         }
     }
 
+    inMemoryData = data;
+
+    // Write to writable temp directory (always works on Vercel serverless /tmp and locally)
     try {
-        fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
-        return;
+        fs.writeFileSync(WRITABLE_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
     } catch (e) {
-        console.warn("Filesystem write failed (read-only environment), keeping in memory:", e.message);
-        inMemoryData = data;
+        console.warn("Could not write to temp directory:", e.message);
+    }
+
+    // Also attempt writing to bundled location if writable (e.g. local development)
+    try {
+        fs.writeFileSync(BUNDLED_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (_) {
+        // Silently ignore EROFS in read-only production environments
     }
 }
 

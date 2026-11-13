@@ -39,7 +39,12 @@ export default function Settings() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/state/reset`, { method: 'POST' });
       if (res.ok) {
-        await fetchState();
+        const data = await res.json();
+        if (data.state) {
+          setState(data.state);
+        } else {
+          await fetchState();
+        }
         alert('Progress reset complete.');
       }
     } catch (e) {

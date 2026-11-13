@@ -14,6 +14,10 @@ app.use(express.json());
 const PORT = process.env.PORT || 5000;
 const DEV_PASSWORD = process.env.DEV_PASSWORD || "pathwise_dev_2024";
 
+function getActiveKey(apiKey) {
+    return apiKey || process.env.GEMINI_API_KEY || process.env.OPENROUTER_API_KEY;
+}
+
 // Utility to get current user state (using a single 'dev1' user for now)
 async function getUserState() {
     const db = await readDB();
@@ -90,7 +94,7 @@ const XP_BONUS_PERFECT = 50;
 
 app.post('/api/course/generate', async (req, res) => {
     const { topic, apiKey } = req.body;
-    const key = apiKey || process.env.OPENROUTER_API_KEY;
+    const key = getActiveKey(apiKey);
     if (!key) return res.status(400).json({ error: "Missing API Key" });
 
     try {
@@ -101,7 +105,7 @@ app.post('/api/course/generate', async (req, res) => {
             state.roadmap = roadmap;
             state.generated_content = {};
             await saveUserState(state);
-            res.json({ success: true, roadmap });
+            res.json({ success: true, roadmap, state });
         } else {
             res.status(500).json({ error: "Failed to generate roadmap" });
         }
@@ -112,14 +116,15 @@ app.post('/api/course/generate', async (req, res) => {
 
 app.post('/api/course/module', async (req, res) => {
     const { moduleName, apiKey } = req.body;
-    const key = apiKey || process.env.OPENROUTER_API_KEY;
+    const key = getActiveKey(apiKey);
     try {
         const state = await getUserState();
         const content = await getContent(key, state.course_title, moduleName);
+        if (!state.generated_content) state.generated_content = {};
         state.generated_content[moduleName] = content;
-        state.xp += XP_PER_MODULE;
+        state.xp = (state.xp || 0) + XP_PER_MODULE;
         await saveUserState(state);
-        res.json({ success: true, content, xp: state.xp });
+        res.json({ success: true, content, xp: state.xp, state });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -127,7 +132,7 @@ app.post('/api/course/module', async (req, res) => {
 
 app.post('/api/quiz/generate', async (req, res) => {
     const { moduleName, apiKey } = req.body;
-    const key = apiKey || process.env.OPENROUTER_API_KEY;
+    const key = getActiveKey(apiKey);
     try {
         const state = await getUserState();
         const quiz = await generateQuiz(key, state.course_title, moduleName);
@@ -139,7 +144,7 @@ app.post('/api/quiz/generate', async (req, res) => {
 
 app.post('/api/quiz/submit', async (req, res) => {
     const { moduleName, answers, questions, apiKey } = req.body;
-    const key = apiKey || process.env.OPENROUTER_API_KEY;
+    const key = getActiveKey(apiKey);
     let correctCount = 0;
     const wrongTopics = [];
 
@@ -158,7 +163,8 @@ app.post('/api/quiz/submit', async (req, res) => {
     else if (scorePct >= 80) xpEarned += XP_BONUS_GOOD;
 
     const state = await getUserState();
-    state.xp += xpEarned;
+    state.xp = (state.xp || 0) + xpEarned;
+    if (!state.quizzes_taken) state.quizzes_taken = [];
     state.quizzes_taken.push({
         topic: state.course_title,
         subtopic: moduleName,
